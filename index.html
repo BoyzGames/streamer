@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask Server</title>
+    <style>
+        body {{ font-family: 'Segoe UI', sans-serif; text-align: center; padding-top: 50px; background: #1a1a1a; color: white; }}
+        h1 {{ color: #f38020; }}
+        .container {{ max-width: 600px; margin: 0 auto; }}
+        .port-box {{ background: #333; padding: 15px; border-radius: 8px; display: inline-block; margin-top: 10px; border: 1px solid #444; }}
+        .aimbot-section {{ margin-top: 40px; padding: 20px; background: #252525; border-radius: 10px; border: 1px solid #f38020; }}
+        
+        /* Style Tombol Aimbot */
+        .btn-aimbot {{
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 10px 2px;
+            cursor: pointer;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(255, 75, 43, 0.4);
+            transition: transform 0.2s;
+        }}
+        .btn-aimbot:active {{ transform: scale(0.95); }}
+        .btn-aimbot:disabled {{ background: #555; cursor: not-allowed; box-shadow: none; }}
+        
+        #status-aimbot {{ margin-top: 15px; font-weight: bold; min-height: 24px; }}
+        .success {{ color: #2ecc71; }}
+        .error {{ color: #e74c3c; }}
+        .process {{ color: #f39c12; }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Flask Server Aktif</h1>
+        <p>Server berjalan di Port Acak:</p>
+        <div class="port-box">
+            <h2>localhost:{LOCAL_PORT}</h2>
+        </div>
+
+        <!-- Bagian Aimbot -->
+        <div class="aimbot-section">
+            <h2 style="color: #f38020; margin-bottom: 20px;">🎯 Aimbot Control</h2>
+            <button id="btnAimbot" class="btn-aimbot" onclick="runAimbot()">ENABLE AIMBOT</button>
+            <div id="status-aimbot">Siap digunakan.</div>
+        </div>
+    </div>
+
+    <script>
+        function runAimbot() {{
+            const btn = document.getElementById('btnAimbot');
+            const statusDiv = document.getElementById('status-aimbot');
+            
+            // UI Update: Loading
+            btn.disabled = true;
+            btn.innerText = "PROCESSING...";
+            statusDiv.className = "process";
+            statusDiv.innerText = "Sedang menyuntikkan kode ke memori... Mohon tunggu.";
+
+            // Fetch ke Backend
+            fetch('/run_aimbot', {{
+                method: 'POST'
+            }})
+            .then(response => response.json())
+            .then(data => {{
+                // UI Update: Selesai
+                btn.disabled = false;
+                btn.innerText = "ENABLE AIMBOT";
+                
+                if (data.success) {{
+                    statusDiv.className = "success";
+                    statusDiv.innerText = "✅ " + data.message;
+                }} else {{
+                    statusDiv.className = "error";
+                    statusDiv.innerText = "❌ " + data.message;
+                }}
+            }})
+            .catch(error => {{
+                console.error('Error:', error);
+                btn.disabled = false;
+                btn.innerText = "ENABLE AIMBOT";
+                statusDiv.className = "error";
+                statusDiv.innerText = "Gagal menghubungi server.";
+            }});
+        }}
+    </script>
+</body>
+</html>
